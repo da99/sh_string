@@ -2,21 +2,30 @@
 # === {{CMD}} 9 "very long string" -> "very long..."
 summarize () {
   local +x TARGET="$1"; shift
-  local +x TEXT="$(echo -n $@ | tr '\t' ' ' | tr -s ' ')"
-  local +x COUNT="$(echo "$@" | wc -m)"
 
-  if [[ "$COUNT" -le "$TARGET" ]]; then
-    echo "$TEXT"
-    return
+  if [[ ! -z "$@" ]]; then
+    echo "$@" | summarize $TARGET
+    return $?
   fi
 
-  local +x SHORT="${TEXT:0:$(($TARGET + 1))}"
-  local +x CHAR="${TEXT:$TARGET:$(($TARGET + 1))}"
+  while read TEXT; do
+    local +x TEXT="$(echo "$TEXT" | tr '\t' ' ' | tr -s ' ')"
+    local +x COUNT="$(echo "$TEXT" | wc -m)"
 
-  if [[ "$CHAR" == ' ' ]]; then
-    echo -n ${SHORT}...
-  fi
+    if [[ "$COUNT" -le "$TARGET" ]] || ! echo $TEXT | grep -P '[[:space:]]' &>/dev/null; then
+      echo "$TEXT"
+      continue
+    fi
 
-  echo -n $SHORT | rev | grep -Pzo '(?s)[[:space:]]+\K(.+)' | rev
-  echo -n ...
+    local +x SHORT="${TEXT:0:$(($TARGET + 1))}"
+    local +x CHAR="${TEXT:$TARGET:$(($TARGET + 1))}"
+
+    if [[ "$CHAR" == ' ' ]]; then
+      echo -n ${SHORT}...
+      continue
+    fi
+
+    echo -n $SHORT | rev | grep -Pzo '(?s)[[:space:]]+\K(.+)' | rev
+    echo ...
+  done
 } # === end function
