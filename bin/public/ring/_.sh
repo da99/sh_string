@@ -1,0 +1,4 @@
+
+# === {{CMD}}  ...
+ring () {
+} # === end function
