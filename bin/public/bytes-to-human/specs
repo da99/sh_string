@@ -1,0 +1,21 @@
+#!/usr/bin/env mksh
+#
+#
+set -u -e -o pipefail
+
+local +x PATH="$PATH:./bin/"
+
+should-eq () {
+  local +x expected="$1"; shift
+  local +x actual="$($@ 2>&1)"
+
+  [[ "$expected" == "$actual" ]] || {
+    echo "=== FAIL: $@"
+    echo "===  $actual != $expected"
+    exit 2
+  } >&2
+}
+
+should-eq "1 Kb/s" sh_string bytes-to-human 1024
+should-eq "1 Mb/s" sh_string bytes-to-human $((1024 * 1024))
+should-eq "1.52 Mb/s" sh_string bytes-to-human $(((1024 * 1024) + (1024 * 512)))
