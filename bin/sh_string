@@ -1,17 +1,17 @@
 #!/usr/bin/env mksh
 #
 #
-THE_ARGS="$@"
-THIS_DIR="$(dirname "$(dirname "$0")")"
+set -u -e -o pipefail
+local +x THE_ARGS="$@"
+local +x THIS_DIR="$(dirname "$(dirname "$0")")"
 
 if [[ -z "$@" ]]; then
-  action="watch"
+  local +x action="watch"
 else
-  action=$1
+  local +x action=$1
   shift
 fi
 
-set -u -e -o pipefail
 
 case $action in
   help|--help|-h)
@@ -21,10 +21,8 @@ case $action in
 
   *)
 
-    FUNC_FILE="$THIS_DIR/bin/public/${action}/_.sh"
-
+    local +x FUNC_FILE="$THIS_DIR/bin/public/${action}/_.sh"
     if [[ -s  "$FUNC_FILE"  ]]; then
-
       export THIS_FILE="$FUNC_FILE"
       export THIS_FUNC="$action"
       export THIS_FUNC_DIR="$THIS_DIR/bin/public/${action}"
@@ -34,7 +32,13 @@ case $action in
       return 0
     fi
 
-    BIN_FILE="$THIS_DIR/bin/lib/${action}.sh"
+    local +x SCRIPT_FILE="$THIS_DIR/scripts/${action}"
+    if [[ -x "$SCRIPT_FILE" ]]; then
+      "$SCRIPT_FILE" "$@"
+      exit 0
+    fi
+
+    local +x BIN_FILE="$THIS_DIR/bin/lib/${action}.sh"
     if [[ -s "$BIN_FILE" ]]; then
       source "$BIN_FILE"
       "$action" "$@"
