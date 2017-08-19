@@ -1,4 +1,6 @@
 
+* Remove leading/ending whitespace. Truncate whitespace:
+  https://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable
 
 * Print lines before or after a matching substring on a line:
   https://stackoverflow.com/questions/7103531/how-to-get-the-part-of-file-after-the-line-that-matches-grep-expression-first
