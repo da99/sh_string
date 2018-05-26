@@ -3,7 +3,7 @@
 #
 set -u -e -o pipefail
 
-local +x PATH="$PATH:./bin/"
+PATH="$PATH:./bin/"
 
 should-eq () {
   local +x expected="$1"; shift
